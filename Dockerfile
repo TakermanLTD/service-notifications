@@ -1,26 +1,24 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
-COPY ["ActivTrades.MailService/ActivTrades.MailService.csproj", "ActivTrades.MailService/"]
-RUN dotnet restore "ActivTrades.MailService/ActivTrades.MailService.csproj"
+COPY ["Takerman.MailService/Takerman.MailService.csproj", "Takerman.MailService/"]
+RUN dotnet restore "Takerman.MailService/Takerman.MailService.csproj"
 COPY . .
 
-COPY ["ActivTrades.MailService.Tests/ActivTrades.MailService.Tests.csproj", "ActivTrades.MailService.Tests/"]
-RUN dotnet restore "ActivTrades.MailService.Tests/ActivTrades.MailService.Tests.csproj"
+COPY ["Takerman.MailService.Tests/Takerman.MailService.Tests.csproj", "Takerman.MailService.Tests/"]
+RUN dotnet restore "Takerman.MailService.Tests/Takerman.MailService.Tests.csproj"
 COPY . .
 
-WORKDIR "/src/ActivTrades.MailService"
-RUN dotnet build "ActivTrades.MailService.csproj" -c Release -o /app/build
+WORKDIR "/src/Takerman.MailService"
+RUN dotnet build "Takerman.MailService.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "ActivTrades.MailService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Takerman.MailService.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ActivTrades.MailService.dll"]
+ENTRYPOINT ["dotnet", "Takerman.MailService.dll"]
