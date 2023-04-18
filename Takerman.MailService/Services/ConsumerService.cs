@@ -36,15 +36,22 @@ namespace RabbitMq.Consumer.Services
             var consumer = new AsyncEventingBasicConsumer(_model);
             consumer.Received += async (ch, ea) =>
             {
-                var body = ea.Body.ToArray();
-                var text = Encoding.UTF8.GetString(body);
+                try
+                {
+                    var body = ea.Body.ToArray();
+                    var text = Encoding.UTF8.GetString(body);
 
-                var mail = JsonConvert.DeserializeObject<MailMessage>(text);
+                    var mail = JsonConvert.DeserializeObject<MailMessage>(text);
 
-                await _mailService.Send(mail);
+                    await _mailService.Send(mail);
 
-                await Task.CompletedTask;
-                _model.BasicAck(ea.DeliveryTag, false);
+                    await Task.CompletedTask;
+                    _model.BasicAck(ea.DeliveryTag, false);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to consume the request", ex);
+                }
             };
             _model.BasicConsume(_rabbitMqConfig.Queue, false, consumer);
             await Task.CompletedTask;

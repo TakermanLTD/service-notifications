@@ -26,15 +26,25 @@ namespace PersonalArea.Business.Tests
             _rabbitMqOptions = Options.Create(_rabbitMqConfig);
             _mailOptions = Options.Create(_mailConfig);
             _rabbitMqService = new RabbitMqService(_rabbitMqOptions);
-            _mailService = new MailService(_mailOptions, _rabbitMqService);
+            _mailService = new MailService(_mailOptions, _rabbitMqOptions, _rabbitMqService);
         }
 
         [Test]
-        public async Task Should_SendATestEmailSuccessfully_When_SendEmailMethodIsCalled()
+        public async Task Should_SendATestEmailSuccessfully_When_GmailIsCalled()
         {
             var message = new MailMessage("tivanov@takerman.net", "tanyo@takerman.net", "Test Subject", "Test body");
 
             await _mailService.Send(message);
+
+            Assert.True(true);
+        }
+
+        [Test]
+        public async Task Should_SendATestEmailSuccessfully_When_RabbitMqIsCalled()
+        {
+            var message = new MailMessage("tivanov@takerman.net", "tanyo@takerman.net", "Test Subject", "Test body");
+
+            await _mailService.SendToQueue(message);
 
             Assert.True(true);
         }

@@ -15,18 +15,19 @@ namespace Takerman.MailService.Consumer.HostedServices
 
         public IConnection CreateChannel()
         {
-            var connection = new ConnectionFactory()
+            return new ConnectionFactory()
             {
                 HostName = _rabbitMqConfig.Hostname,
                 UserName = _rabbitMqConfig.Username,
                 Password = _rabbitMqConfig.Password,
                 Port = _rabbitMqConfig.Port,
                 DispatchConsumersAsync = true
-            };
+            }.CreateConnection();
+        }
 
-            var channel = connection.CreateConnection();
-
-            return channel;
+        public IModel GetModel()
+        {
+            return CreateChannel().CreateModel();
         }
     }
 }
