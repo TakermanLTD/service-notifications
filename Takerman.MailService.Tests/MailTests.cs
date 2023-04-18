@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using RabbitMq.Common.Models;
 using System.Net.Mail;
 using Takerman.MailService.Consumer.HostedServices;
@@ -9,8 +10,10 @@ namespace PersonalArea.Business.Tests
     public class MailTests
     {
         private readonly IConfigurationRoot _configuration;
-        private readonly RabbitMqConfig _rabbitMqConfig;
-        private readonly SmtpConfig _mailConfig;
+        private readonly RabbitMqConfig? _rabbitMqConfig;
+        private readonly SmtpConfig? _mailConfig;
+        private readonly IOptions<RabbitMqConfig?> _rabbitMqOptions;
+        private readonly IOptions<SmtpConfig?> _mailOptions;
         private readonly IRabbitMqService _rabbitMqService;
         private readonly MailService _mailService;
 
@@ -19,8 +22,11 @@ namespace PersonalArea.Business.Tests
             _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
             _rabbitMqConfig = _configuration.GetSection(nameof(RabbitMqConfig)).Get<RabbitMqConfig>();
             _mailConfig = _configuration.GetSection(nameof(SmtpConfig)).Get<SmtpConfig>();
-            _rabbitMqService = new RabbitMqService(_rabbitMqConfig);
-            _mailService = new MailService(_mailConfig, _rabbitMqService);
+            
+            _rabbitMqOptions = Options.Create(_rabbitMqConfig);
+            _mailOptions = Options.Create(_mailConfig);
+            _rabbitMqService = new RabbitMqService(_rabbitMqOptions);
+            _mailService = new MailService(_mailOptions, _rabbitMqService);
         }
 
         [Test]

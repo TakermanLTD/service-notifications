@@ -10,7 +10,6 @@ namespace Takerman.MailService.Consumer.Middleware
         {
             services.Configure<RabbitMqConfig>(configuration.GetSection(nameof(RabbitMqConfig)));
             services.Configure<SmtpConfig>(configuration.GetSection(nameof(SmtpConfig)));
-            services.AddSingleton<IRabbitMqService, RabbitMqService>();
         }
 
         public static IApplicationBuilder AddGlobalErrorHandler(this IApplicationBuilder applicationBuilder)

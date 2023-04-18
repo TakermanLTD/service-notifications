@@ -6,6 +6,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Net.Mail;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace RabbitMq.Consumer.Services
 {
@@ -19,10 +20,10 @@ namespace RabbitMq.Consumer.Services
         public ConsumerService(
             IRabbitMqService rabbitMqService, 
             IMailService mailService,
-            RabbitMqConfig rabbitMqConfig)
+            IOptions<RabbitMqConfig> rabbitMqConfig)
         {
             _mailService = mailService;
-            _rabbitMqConfig = rabbitMqConfig;
+            _rabbitMqConfig = rabbitMqConfig.Value;
             _connection = rabbitMqService.CreateChannel();
             _model = _connection.CreateModel();
             _model.QueueDeclare(_rabbitMqConfig.Queue, durable: false, exclusive: false, autoDelete: false);

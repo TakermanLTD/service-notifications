@@ -2,6 +2,7 @@
 using RabbitMq.Common.Models;
 using System.Net;
 using System.Net.Mail;
+using Microsoft.Extensions.Options;
 
 namespace Takerman.MailService.Consumer.Services
 {
@@ -9,9 +10,9 @@ namespace Takerman.MailService.Consumer.Services
     {
         private readonly SmtpConfig _smtpConfig;
 
-        public MailService(SmtpConfig smtpConfig, IRabbitMqService rabbitMqService)
+        public MailService(IOptions<SmtpConfig> smtpConfig, IRabbitMqService rabbitMqService)
         {
-            _smtpConfig = smtpConfig;
+            _smtpConfig = smtpConfig.Value;
         }
 
         public async Task Send(MailMessage message)
@@ -22,7 +23,7 @@ namespace Takerman.MailService.Consumer.Services
                 {
                     Host = _smtpConfig.Host,
                     EnableSsl = true,
-                    Port = int.Parse(_smtpConfig.Port),
+                    Port = _smtpConfig.Port,
                     Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password)
                 };
 
