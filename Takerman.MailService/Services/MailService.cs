@@ -1,10 +1,10 @@
-﻿using Takerman.MailService.Consumer.HostedServices;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using RabbitMq.Common.Models;
 using System.Net;
 using System.Net.Mail;
-using Microsoft.Extensions.Options;
 using System.Text;
-using Newtonsoft.Json;
+using Takerman.MailService.Consumer.HostedServices;
 using Takerman.MailService.Models;
 
 namespace Takerman.MailService.Consumer.Services
@@ -34,7 +34,8 @@ namespace Takerman.MailService.Consumer.Services
                     Host = _smtpConfig.Host,
                     EnableSsl = true,
                     Port = _smtpConfig.Port,
-                    Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password)
+                    Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password),
+                    UseDefaultCredentials = true
                 };
 
                 await client.SendMailAsync(message);
