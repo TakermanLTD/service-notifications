@@ -1,12 +1,13 @@
-﻿using Takerman.MailService.Consumer.HostedServices;
-using Takerman.MailService.Consumer.Services;
+﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMq.Common.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Net.Mail;
 using System.Text;
-using Microsoft.Extensions.Options;
+using Takerman.MailService.Consumer.HostedServices;
+using Takerman.MailService.Consumer.Services;
+using Takerman.MailService.Models;
 
 namespace RabbitMq.Consumer.Services
 {
@@ -18,7 +19,7 @@ namespace RabbitMq.Consumer.Services
         private readonly IConnection _connection;
 
         public ConsumerService(
-            IRabbitMqService rabbitMqService, 
+            IRabbitMqService rabbitMqService,
             IMailService mailService,
             IOptions<RabbitMqConfig> rabbitMqConfig)
         {
@@ -41,7 +42,14 @@ namespace RabbitMq.Consumer.Services
                     var body = ea.Body.ToArray();
                     var text = Encoding.UTF8.GetString(body);
 
-                    var mail = JsonConvert.DeserializeObject<MailMessage>(text);
+                    var mailDto = JsonConvert.DeserializeObject<MailMessageDto>(text);
+
+                    var mail = new MailMessage(mailDto.From, mailDto.To)
+                    {
+                        Subject = mailDto.Subject,
+                        Body = mailDto.Body,
+                        IsBodyHtml = true
+                    };
 
                     await _mailService.Send(mail);
 

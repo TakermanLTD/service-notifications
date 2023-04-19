@@ -5,6 +5,7 @@ using System.Net.Mail;
 using Microsoft.Extensions.Options;
 using System.Text;
 using Newtonsoft.Json;
+using Takerman.MailService.Models;
 
 namespace Takerman.MailService.Consumer.Services
 {
@@ -46,7 +47,15 @@ namespace Takerman.MailService.Consumer.Services
 
         public async Task SendToQueue(MailMessage message)
         {
-            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+            var messageDto = new MailMessageDto()
+            {
+                From = message.From.Address,
+                To = message.To.FirstOrDefault().Address,
+                Body = message.Body,
+                Subject = message.Subject
+            };
+
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageDto));
 
             var channel = _rabbitMqService.GetModel();
 
