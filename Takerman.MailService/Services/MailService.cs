@@ -62,7 +62,7 @@ namespace Takerman.MailService.Consumer.Services
             channel.BasicPublish(
                 exchange: _rabbitMqConfig.Exchange,
                 routingKey: _rabbitMqConfig.RoutingKey,
-                mandatory: true,
+                mandatory: false,
                 basicProperties: null,
                 body: body);
         }
