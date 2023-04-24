@@ -20,8 +20,8 @@ namespace Takerman.MailService.Consumer.HostedServices
                 HostName = _rabbitMqConfig.Hostname,
                 UserName = _rabbitMqConfig.Username,
                 Password = _rabbitMqConfig.Password,
-                Port = _rabbitMqConfig.Port,
-                DispatchConsumersAsync = true
+                Port = _rabbitMqConfig.Port
+                //DispatchConsumersAsync = true
             }.CreateConnection();
         }
 

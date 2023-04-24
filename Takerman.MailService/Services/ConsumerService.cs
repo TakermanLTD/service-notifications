@@ -27,8 +27,8 @@ namespace RabbitMq.Consumer.Services
             _rabbitMqConfig = rabbitMqConfig.Value;
             _connection = rabbitMqService.CreateChannel();
             _model = _connection.CreateModel();
-            _model.QueueDeclare(_rabbitMqConfig.Queue, durable: false, exclusive: false, autoDelete: false);
-            _model.ExchangeDeclare(_rabbitMqConfig.Exchange, ExchangeType.Direct, durable: false, autoDelete: false);
+            _model.QueueDeclare(_rabbitMqConfig.Queue, durable: true, exclusive: false, autoDelete: false);
+            _model.ExchangeDeclare(_rabbitMqConfig.Exchange, ExchangeType.Direct, durable: true, autoDelete: false);
             _model.QueueBind(_rabbitMqConfig.Queue, _rabbitMqConfig.Exchange, _rabbitMqConfig.RoutingKey);
         }
 
