@@ -64,7 +64,7 @@ namespace RabbitMq.Consumer.Services
                 }
             };
 
-            _model.BasicConsume(_rabbitMqConfig.Queue, true, consumer);
+            _model.BasicConsume(_rabbitMqConfig.Queue, false, consumer);
             
             await Task.CompletedTask;
         }
