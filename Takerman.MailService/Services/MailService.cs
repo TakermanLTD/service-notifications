@@ -34,8 +34,7 @@ namespace Takerman.MailService.Consumer.Services
                     Host = _smtpConfig.Host,
                     EnableSsl = true,
                     Port = _smtpConfig.Port,
-                    Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password),
-                    UseDefaultCredentials = true
+                    Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password)
                 };
 
                 await client.SendMailAsync(message);

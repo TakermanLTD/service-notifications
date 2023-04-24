@@ -32,7 +32,7 @@ namespace PersonalArea.Business.Tests
         [Test]
         public async Task Should_SendATestEmailSuccessfully_When_GmailIsCalled()
         {
-            var message = new MailMessage("tivanov@takerman.net", "tanyo@takerman.net", "Test Subject", "Test body");
+            var message = new MailMessage("tivanov@takerman.net", "contact@takerman.net", "Test Subject", "Test body");
 
             await _mailService.Send(message);
 
@@ -42,7 +42,7 @@ namespace PersonalArea.Business.Tests
         [Test]
         public async Task Should_SendATestEmailSuccessfully_When_RabbitMqIsCalled()
         {
-            var message = new MailMessage("tivanov@takerman.net", "tanyo@takerman.net", "Test Subject", "Test body");
+            var message = new MailMessage("tivanov@takerman.net", "contact@takerman.net", "Test Subject", "Test body");
 
             await _mailService.SendToQueue(message);
 
