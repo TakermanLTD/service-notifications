@@ -40,6 +40,7 @@ namespace RabbitMq.Consumer.Services
                 try
                 {
                     var body = ea.Body.ToArray();
+                    
                     var text = Encoding.UTF8.GetString(body);
 
                     var mailDto = JsonConvert.DeserializeObject<MailMessageDto>(text);
@@ -54,6 +55,7 @@ namespace RabbitMq.Consumer.Services
                     await _mailService.Send(mail);
 
                     await Task.CompletedTask;
+
                     _model.BasicAck(ea.DeliveryTag, false);
                 }
                 catch (Exception ex)
@@ -61,7 +63,8 @@ namespace RabbitMq.Consumer.Services
                     throw new Exception("Failed to consume the request", ex);
                 }
             };
-            _model.BasicConsume(_rabbitMqConfig.Queue, false, consumer);
+            _model.BasicConsume(_rabbitMqConfig.Queue, true, consumer);
+            
             await Task.CompletedTask;
         }
 
