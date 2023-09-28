@@ -1,6 +1,5 @@
-﻿using Takerman.MailService.Consumer.HostedServices;
+﻿using RabbitMq.Common.Models;
 using Takerman.MailService.Consumer.Services;
-using RabbitMq.Common.Models;
 
 namespace Takerman.MailService.Consumer.Middleware
 {
