@@ -63,9 +63,9 @@ namespace RabbitMq.Consumer.Services
 
                             await _mailService.Send(mail);
 
-                            await Task.CompletedTask;
-
                             channel.BasicAck(ea.DeliveryTag, false);
+
+                            await Task.CompletedTask;
                         }
                         catch (Exception ex)
                         {
