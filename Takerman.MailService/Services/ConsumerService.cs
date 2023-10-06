@@ -5,7 +5,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Net.Mail;
 using System.Text;
-using System.Threading.Channels;
 using Takerman.MailService.Consumer.HostedServices;
 using Takerman.MailService.Consumer.Services;
 using Takerman.MailService.Models;
@@ -15,7 +14,9 @@ namespace RabbitMq.Consumer.Services
     public class ConsumerService : IConsumerService
     {
         private readonly IMailService _mailService;
-        private readonly IOptions<RabbitMqConfig> _rabbitMqConfig;
+
+        private readonly IOptions<RabbitMqConfig> _rabbitakerman.nettakerman.nettMqConfig;
+
         private readonly ConnectionFactory _connectionFactory;
         private readonly IConnection _connection;
         private readonly IModel _channel;
