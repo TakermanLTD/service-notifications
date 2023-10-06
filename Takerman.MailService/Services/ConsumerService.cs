@@ -5,6 +5,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Net.Mail;
 using System.Text;
+using System.Threading.Channels;
 using Takerman.MailService.Consumer.HostedServices;
 using Takerman.MailService.Consumer.Services;
 using Takerman.MailService.Models;
@@ -16,6 +17,8 @@ namespace RabbitMq.Consumer.Services
         private readonly IMailService _mailService;
         private readonly IOptions<RabbitMqConfig> _rabbitMqConfig;
         private readonly ConnectionFactory _connectionFactory;
+        private readonly IConnection _connection;
+        private readonly IModel _channel;
 
         public ConsumerService(
             IMailService mailService,
@@ -31,52 +34,48 @@ namespace RabbitMq.Consumer.Services
                 Port = _rabbitMqConfig.Value.Port,
                 DispatchConsumersAsync = true
             };
+            _connection = _connectionFactory.CreateConnection();
+            _channel = _connection.CreateModel();
         }
 
         public async Task ReadMessages()
         {
-            using (var connection = _connectionFactory.CreateConnection())
+            try
             {
-                using (var channel = connection.CreateModel())
+                _channel.QueueDeclare(_rabbitMqConfig.Value.Queue, durable: false, exclusive: false, autoDelete: false);
+                _channel.ExchangeDeclare(_rabbitMqConfig.Value.Exchange, ExchangeType.Direct, durable: false, autoDelete: false);
+                _channel.QueueBind(_rabbitMqConfig.Value.Queue, _rabbitMqConfig.Value.Exchange, _rabbitMqConfig.Value.RoutingKey);
+
+                var consumer = new AsyncEventingBasicConsumer(_channel);
+                consumer.Received += async (ch, ea) =>
                 {
-                    channel.QueueDeclare(_rabbitMqConfig.Value.Queue, durable: false, exclusive: false, autoDelete: false);
-                    channel.ExchangeDeclare(_rabbitMqConfig.Value.Exchange, ExchangeType.Direct, durable: false, autoDelete: false);
-                    channel.QueueBind(_rabbitMqConfig.Value.Queue, _rabbitMqConfig.Value.Exchange, _rabbitMqConfig.Value.RoutingKey);
+                    var body = ea.Body.ToArray();
 
-                    var consumer = new AsyncEventingBasicConsumer(channel);
-                    consumer.Received += async (ch, ea) =>
+                    var text = Encoding.UTF8.GetString(body);
+
+                    var mailDto = JsonConvert.DeserializeObject<MailMessageDto>(text);
+
+                    var mail = new MailMessage(mailDto.From, mailDto.To)
                     {
-                        try
-                        {
-                            var body = ea.Body.ToArray();
-
-                            var text = Encoding.UTF8.GetString(body);
-
-                            var mailDto = JsonConvert.DeserializeObject<MailMessageDto>(text);
-
-                            var mail = new MailMessage(mailDto.From, mailDto.To)
-                            {
-                                Subject = mailDto.Subject,
-                                Body = mailDto.Body,
-                                IsBodyHtml = true
-                            };
-
-                            await _mailService.Send(mail);
-
-                            channel.BasicAck(ea.DeliveryTag, false);
-
-                            await Task.CompletedTask;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("Failed to consume the request", ex);
-                        }
+                        Subject = mailDto.Subject,
+                        Body = mailDto.Body,
+                        IsBodyHtml = true
                     };
 
-                    channel.BasicConsume(_rabbitMqConfig.Value.Queue, false, consumer);
+                    await _mailService.Send(mail);
+
+                    _channel.BasicAck(ea.DeliveryTag, false);
 
                     await Task.CompletedTask;
-                }
+                };
+
+                _channel.BasicConsume(_rabbitMqConfig.Value.Queue, false, consumer);
+
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to consume the request", ex);
             }
         }
     }
