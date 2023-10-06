@@ -15,7 +15,7 @@ namespace RabbitMq.Consumer.Services
     {
         private readonly IMailService _mailService;
 
-        private readonly IOptions<RabbitMqConfig> _rabbitakerman.nettakerman.nettMqConfig;
+        private readonly IOptions<RabbitMqConfig> _rabbitMqConfig;
 
         private readonly ConnectionFactory _connectionFactory;
         private readonly IConnection _connection;
