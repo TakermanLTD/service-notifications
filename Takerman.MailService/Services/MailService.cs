@@ -72,13 +72,16 @@ namespace Takerman.MailService.Consumer.Services
                 {
                     try
                     {
+                        channel.ExchangeDeclare(DeadLetterQueue.Exchange, ExchangeType.Direct, durable: true, autoDelete: false);
                         channel.QueueDeclare(DeadLetterQueue.Queue, durable: true, exclusive: false, autoDelete: false);
                         channel.QueueBind(DeadLetterQueue.Queue, DeadLetterQueue.Exchange, DeadLetterQueue.RoutingKey);
 
+                        channel.ExchangeDeclare(MailQueue.Exchange, ExchangeType.Direct, durable: false, autoDelete: false);
                         channel.QueueDeclare(MailQueue.Queue, durable: false, exclusive: false, autoDelete: false, DeadLetterQueue.Args);
-                        
+                        channel.QueueBind(MailQueue.Queue, MailQueue.Exchange, MailQueue.RoutingKey);
+
                         channel.BasicPublish(
-                            exchange: string.Empty,
+                            exchange: MailQueue.Exchange,
                             routingKey: MailQueue.RoutingKey,
                             mandatory: false,
                             basicProperties: null,

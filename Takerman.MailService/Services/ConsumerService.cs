@@ -44,11 +44,13 @@ namespace RabbitMq.Consumer.Services
         {
             try
             {
+                _channel.ExchangeDeclare(DeadLetterQueue.Exchange, ExchangeType.Direct, durable: true, autoDelete: false);
                 _channel.QueueDeclare(DeadLetterQueue.Queue, durable: true, exclusive: false, autoDelete: false);
                 _channel.QueueBind(DeadLetterQueue.Queue, DeadLetterQueue.Exchange, DeadLetterQueue.RoutingKey);
 
+                _channel.ExchangeDeclare(MailQueue.Exchange, ExchangeType.Direct, durable: false, autoDelete: false);
                 _channel.QueueDeclare(MailQueue.Queue, durable: false, exclusive: false, autoDelete: false, DeadLetterQueue.Args);
-                _channel.QueueBind(MailQueue.Queue, string.Empty, MailQueue.RoutingKey);
+                _channel.QueueBind(MailQueue.Queue, MailQueue.Exchange, MailQueue.RoutingKey);
 
                 var consumer = new AsyncEventingBasicConsumer(_channel);
                 consumer.Received += async (ch, ea) =>
