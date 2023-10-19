@@ -8,6 +8,7 @@ using System.Text;
 using Takerman.MailService.Consumer.HostedServices;
 using Takerman.MailService.Consumer.Services;
 using Takerman.MailService.Models;
+using Takerman.MailService.Queue;
 
 namespace RabbitMq.Consumer.Services
 {
@@ -43,9 +44,11 @@ namespace RabbitMq.Consumer.Services
         {
             try
             {
-                _channel.QueueDeclare(_rabbitMqConfig.Value.Queue, durable: false, exclusive: false, autoDelete: false);
-                _channel.ExchangeDeclare(_rabbitMqConfig.Value.Exchange, ExchangeType.Direct, durable: false, autoDelete: false);
-                _channel.QueueBind(_rabbitMqConfig.Value.Queue, _rabbitMqConfig.Value.Exchange, _rabbitMqConfig.Value.RoutingKey);
+                _channel.QueueDeclare(DeadLetterQueue.Queue, durable: true, exclusive: false, autoDelete: false);
+                _channel.QueueBind(DeadLetterQueue.Queue, DeadLetterQueue.Exchange, DeadLetterQueue.RoutingKey);
+
+                _channel.QueueDeclare(MailQueue.Queue, durable: false, exclusive: false, autoDelete: false, DeadLetterQueue.Args);
+                _channel.QueueBind(MailQueue.Queue, string.Empty, MailQueue.RoutingKey);
 
                 var consumer = new AsyncEventingBasicConsumer(_channel);
                 consumer.Received += async (ch, ea) =>
@@ -70,7 +73,7 @@ namespace RabbitMq.Consumer.Services
                     await Task.CompletedTask;
                 };
 
-                _channel.BasicConsume(_rabbitMqConfig.Value.Queue, false, consumer);
+                _channel.BasicConsume(MailQueue.Queue, false, consumer);
 
                 await Task.CompletedTask;
             }

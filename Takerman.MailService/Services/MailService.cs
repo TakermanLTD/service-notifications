@@ -5,7 +5,9 @@ using RabbitMQ.Client;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Threading.Channels;
 using Takerman.MailService.Models;
+using Takerman.MailService.Queue;
 
 namespace Takerman.MailService.Consumer.Services
 {
@@ -70,12 +72,14 @@ namespace Takerman.MailService.Consumer.Services
                 {
                     try
                     {
-                        channel.QueueDeclare(_rabbitMqConfig.Queue, durable: false, exclusive: false, autoDelete: false);
-                        channel.ExchangeDeclare(_rabbitMqConfig.Exchange, ExchangeType.Direct, durable: false, autoDelete: false);
+                        channel.QueueDeclare(DeadLetterQueue.Queue, durable: true, exclusive: false, autoDelete: false);
+                        channel.QueueBind(DeadLetterQueue.Queue, DeadLetterQueue.Exchange, DeadLetterQueue.RoutingKey);
 
+                        channel.QueueDeclare(MailQueue.Queue, durable: false, exclusive: false, autoDelete: false, DeadLetterQueue.Args);
+                        
                         channel.BasicPublish(
-                            exchange: _rabbitMqConfig.Exchange,
-                            routingKey: _rabbitMqConfig.RoutingKey,
+                            exchange: string.Empty,
+                            routingKey: MailQueue.RoutingKey,
                             mandatory: false,
                             basicProperties: null,
                             body: body);
