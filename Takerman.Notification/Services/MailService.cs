@@ -18,7 +18,7 @@ namespace Takerman.MailService.Consumer.Services
         {
             try
             {
-                using (var client = new SmtpClient()
+                using var client = new SmtpClient()
                 {
                     Host = _smtpConfig.Host,
                     EnableSsl = true,
@@ -26,10 +26,8 @@ namespace Takerman.MailService.Consumer.Services
                     Port = _smtpConfig.Port,
                     Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password),
                     UseDefaultCredentials = false
-                })
-                {
-                    await client.SendMailAsync(message);
-                }
+                };
+                await client.SendMailAsync(message);
             }
             catch (Exception ex)
             {

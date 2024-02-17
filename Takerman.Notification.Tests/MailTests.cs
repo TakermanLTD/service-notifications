@@ -11,39 +11,38 @@ namespace PersonalArea.Business.Tests
         private readonly IConfigurationRoot _configuration;
         private readonly RabbitMqConfig? _rabbitMqConfig;
         private readonly SmtpConfig? _mailConfig;
-        private readonly IOptions<RabbitMqConfig?> _rabbitMqOptions;
         private readonly IOptions<SmtpConfig?> _mailOptions;
         private readonly MailService _mailService;
 
         public MailTests()
         {
             _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
-            _rabbitMqConfig = _configuration.GetSection(nameof(RabbitMqConfig)).Get<RabbitMqConfig>();
             _mailConfig = _configuration.GetSection(nameof(SmtpConfig)).Get<SmtpConfig>();
 
-            _rabbitMqOptions = Options.Create(_rabbitMqConfig);
             _mailOptions = Options.Create(_mailConfig);
-            _mailService = new MailService(_mailOptions, _rabbitMqOptions);
+            _mailService = new MailService(_mailOptions);
         }
 
         [Test]
         public async Task Should_SendATestEmailSuccessfully_When_GmailIsCalled()
         {
-            var message = new MailMessage("tivanov@takerman.net", "contact@takerman.net", "Test Subject", "Test body");
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                var message = new MailMessage("tivanov@takerman.net", "contact@takerman.net", "Test Subject", "Test body");
 
-            await _mailService.Send(message);
-
-            Assert.True(true);
+                await _mailService.Send(message);
+            });
         }
 
         [Test]
         public async Task Should_SendATestEmailSuccessfully_When_RabbitMqIsCalled()
         {
-            var message = new MailMessage("tivanov@takerman.net", "contact@takerman.net", "Test Subject", "Test body");
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                var message = new MailMessage("tivanov@takerman.net", "contact@takerman.net", "Test Subject", "Test body");
 
-            await _mailService.SendToQueue(message);
-
-            Assert.True(true);
+                await _mailService.Send(message);
+            });
         }
     }
 }
