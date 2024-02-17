@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Takerman.Notification\Takerman.Notification.csproj" />
+    <ProjectReference Include="..\Takerman.Notifications\Takerman.Notifications.csproj" />
   </ItemGroup>
 
 </Project>
