@@ -61,7 +61,7 @@ namespace RabbitMq.Consumer.Services
 
                     var mailDto = JsonConvert.DeserializeObject<MailMessageDto>(text);
 
-                    var mail = new MailMessage(mailDto.From, mailDto.To)
+                    var mail = new MailMessage(new MailAddress(mailDto.From, mailDto?.Name), new MailAddress(mailDto.To))
                     {
                         Subject = mailDto.Subject,
                         Body = mailDto.Body,
