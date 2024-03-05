@@ -5,26 +5,19 @@ using System.Net.Mail;
 
 namespace Takerman.MailService.Consumer.Services
 {
-    public class MailService : IMailService
+    public class MailService(IOptions<SmtpConfig> _smtpConfig) : IMailService
     {
-        private readonly SmtpConfig _smtpConfig;
-
-        public MailService(IOptions<SmtpConfig> smtpConfig)
-        {
-            _smtpConfig = smtpConfig.Value;
-        }
-
         public async Task Send(MailMessage message)
         {
             try
             {
                 using var client = new SmtpClient()
                 {
-                    Host = _smtpConfig.Host,
+                    Host = _smtpConfig.Value.Host,
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
-                    Port = _smtpConfig.Port,
-                    Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password),
+                    Port = _smtpConfig.Value.Port,
+                    Credentials = new NetworkCredential(_smtpConfig.Value.Username, _smtpConfig.Value.Password),
                     UseDefaultCredentials = false
                 };
                 await client.SendMailAsync(message);

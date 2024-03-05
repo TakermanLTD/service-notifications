@@ -2,18 +2,16 @@
 
 namespace RabbitMq.Consumer.HostedServices
 {
-    public class ConsumerHostedService : BackgroundService
+    public class ConsumerHostedService(IConsumerService _consumerService, ILogger<ConsumerHostedService> _logger) : IHostedService
     {
-        private readonly IConsumerService _consumerService;
-
-        public ConsumerHostedService(IConsumerService consumerService)
-        {
-            _consumerService = consumerService;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             await _consumerService.ReadMessages();
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("The notification service has been stopped");
         }
     }
 }

@@ -11,7 +11,6 @@ namespace Takerman.MailService.Consumer.Middleware
             services.Configure<SmtpConfig>(configuration.GetSection(nameof(SmtpConfig)));
         }
 
-        public static IApplicationBuilder AddGlobalErrorHandler(this IApplicationBuilder applicationBuilder)
-        => applicationBuilder.UseMiddleware<GlobalErrorHandlingMiddleware>();
+        public static IApplicationBuilder AddGlobalErrorHandler(this IApplicationBuilder applicationBuilder) => applicationBuilder.UseMiddleware<GlobalErrorHandlingMiddleware>();
     }
 }

@@ -15,9 +15,7 @@ namespace RabbitMq.Consumer.Services
     public class ConsumerService : IConsumerService
     {
         private readonly IMailService _mailService;
-
         private readonly IOptions<RabbitMqConfig> _rabbitMqConfig;
-
         private readonly ConnectionFactory _connectionFactory;
         private readonly IConnection _connection;
         private readonly IModel _channel;

@@ -5,7 +5,7 @@
         public const string Queue = "deadLetter";
         public const string Exchange = "deadLetter";
         public const string RoutingKey = "deadLetterRouting";
-        public static Dictionary<string, object> Args = new Dictionary<string, object>
+        public static Dictionary<string, object> Args = new()
         {
             {"x-dead-letter-exchange", Exchange},
             {"x-dead-letter-routing-key", RoutingKey},

@@ -3,15 +3,8 @@ using System.Text.Json;
 
 namespace Takerman.MailService.Consumer.Services
 {
-    public class GlobalErrorHandlingMiddleware
+    public class GlobalErrorHandlingMiddleware(RequestDelegate _next)
     {
-        private readonly RequestDelegate _next;
-
-        public GlobalErrorHandlingMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
         public async Task Invoke(HttpContext context)
         {
             try
