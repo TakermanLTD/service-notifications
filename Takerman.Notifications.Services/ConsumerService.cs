@@ -30,8 +30,7 @@ namespace Takerman.Notifications.Services
                 HostName = _rabbitMqConfig.Value.Hostname,
                 UserName = _rabbitMqConfig.Value.Username,
                 Password = _rabbitMqConfig.Value.Password,
-                Port = _rabbitMqConfig.Value.Port,
-                DispatchConsumersAsync = true
+                Port = _rabbitMqConfig.Value.Port
             };
             _connection = _connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
