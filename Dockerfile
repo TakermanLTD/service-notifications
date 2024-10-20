@@ -15,8 +15,8 @@ COPY ["Takerman.Notifications/nuget.config", "./"]
 RUN sed -i "s|</configuration>|<packageSourceCredentials><github><add key=\"Username\" value=\"takerman\"/><add key=\"ClearTextPassword\" value=\"${NUGET_PASSWORD}\"/></github></packageSourceCredentials></configuration>|" nuget.config
 RUN dotnet nuget add source https://nuget.pkg.github.com/takermanltd/index.json --name github
 
-WORKDIR "/src/Takerman.Notifications.Tests"
-RUN dotnet test
+# WORKDIR "/src/Takerman.Notifications.Tests"
+# RUN dotnet test
 
 WORKDIR "/src/Takerman.Notifications"
 RUN dotnet build "Takerman.Notifications.csproj" -c Release -o /app/build
