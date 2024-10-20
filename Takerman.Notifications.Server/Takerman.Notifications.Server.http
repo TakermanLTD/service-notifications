@@ -1,0 +1,6 @@
+@Takerman.Notifications.Server_HostAddress = http://localhost:7062
+
+GET {{Takerman.Notifications.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
